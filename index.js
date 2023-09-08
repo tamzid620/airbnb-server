@@ -27,18 +27,44 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
 
-// collection section ----------------------------------------------------------------> 
-const roomsCollection = client.db('AirBnb').collection('rooms');
+    // collection section ----------------------------------------------------------------> 
+    const roomsCollection = client.db('AirBnb').collection('rooms');
 
-// room.get -----------------------
-app.get('/rooms', async (req, res) =>{
-    const result = await roomsCollection.find().toArray();
-    res.send(result);
+    // room.get -----------------------
+    app.get('/rooms', async (req, res) => {
+      const result = await roomsCollection.find().toArray();
+      res.send(result);
     });
 
+    // document Find ----------------------
+    app.get('/filter', async (req, res) => {
+      const query = {
+        "TypeOfPlace": "",
+        "Bedrooms": "",
+        "Beds": "",
+        "Bathrooms": "",
+        "PropertyType": "",
+        "dateRange": "",
+        "price": ""
+      };
+      const options = {
+        sort: { _id: 1 },
+        projection: {
+           price: 0, 
+           TypeOfPlace: 0,
+            Beds: 0,
+             Bedrooms: 0, 
+             Bathrooms:0 ,
+             PropertyType: 0,
+             dateRange: 0,
+             price: 0
+            },
+      };
+      const cursor = await roomsCollection.find(query, options).toArray();
+      res.send(cursor);
+    }),
 
-
-    await client.connect();
+      await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -53,8 +79,8 @@ run().catch(console.dir);
 
 // app listen-----------------------
 app.get('/', (req, res) => {
-    res.send('hello world')
+  res.send('hello world')
 })
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+  console.log(`Example app listening on port ${port}`)
+})
