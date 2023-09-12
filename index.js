@@ -6,6 +6,7 @@ require('dotenv').config();
 const cors = require('cors')
 const port = process.env.PORT || 5000;
 
+
 // middleware ---
 app.use(cors());
 app.use(express.json());
@@ -37,32 +38,15 @@ async function run() {
     });
 
     // document Find ----------------------
-    app.get('/filter', async (req, res) => {
-      const query = {
-        "TypeOfPlace": "",
-        "Bedrooms": "",
-        "Beds": "",
-        "Bathrooms": "",
-        "PropertyType": "",
-        "dateRange": "",
-        "price": ""
+    app.get('/rooms', async (req, res) => {
+      const data = req.query.data;
+      const query = { 
+        data: { $in: data }
       };
-      const options = {
-        sort: { _id: 1 },
-        projection: {
-           price: 0, 
-           TypeOfPlace: 0,
-            Beds: 0,
-             Bedrooms: 0, 
-             Bathrooms:0 ,
-             PropertyType: 0,
-             dateRange: 0,
-             price: 0
-            },
-      };
-      const cursor = await roomsCollection.find(query, options).toArray();
-      res.send(cursor);
-    }),
+      const cursor = filterCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
       await client.connect();
     // Send a ping to confirm a successful connection
